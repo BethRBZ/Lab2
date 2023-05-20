@@ -1,28 +1,28 @@
 import java.io.*;
+import java.util.*;
 
 public class Main {
+
     public static void main(String[] args) {
-        File directory = new File("C://Users//Beth//Desktop");
-        File[] files = directory.listFiles();
-        int count = 0;
-        for (File file : files) {
+        File folder = new File("C://Users//Beth//Desktop");
+        Map<String, Integer> freqDict = new HashMap<>();
+        for (File file : folder.listFiles()) {
             if (file.getName().endsWith(".txt")) {
-                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                    String line;
-                    int lineCount = 0;
-
-                    while ((line = br.readLine()) != null) {
-                        String[] words = line.split("\\s+");
-                        lineCount += words.length;
+                try (Scanner input = new Scanner(file)) {
+                    while (input.hasNext()) {
+                        String word = input.next();
+                        word = word.replaceAll("[^A-Za-zА-Яа-я]", "").toLowerCase();
+                        freqDict.put(file.getPath() + ' ' + word, freqDict.getOrDefault(word, 0) + 1);
                     }
-
-                    System.out.printf("Файл %s содержит %d слов.\n", file.getName(), lineCount);
-                    count += lineCount;
-                } catch (IOException e) {
-                    System.err.println(e.getMessage());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
             }
         }
-        System.out.printf("Общее количество слов во всех файлов: %d\n", count);
+        List<Map.Entry<String, Integer>> sortedList = new ArrayList<>(freqDict.entrySet());
+        sortedList.sort(Collections.reverseOrder(Map.Entry.comparingByValue()));
+        for (int i = 0; i < sortedList.size() && i < sortedList.size(); i++) {
+            System.out.println(sortedList.get(i).getKey() + " : " + sortedList.get(i).getValue());
+        }
     }
 }
